@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<title>Trading Ultra Max</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#000814,#020617,#000);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  color:#e5e7eb;
+}
+.panel{
+  width:100%;
+  max-width:360px;
+  padding:28px;
+  border-radius:28px;
+  background:rgba(2,6,23,.75);
+  backdrop-filter:blur(18px);
+  border:1px solid rgba(148,163,184,.15);
+  box-shadow:0 0 80px rgba(56,189,248,.12);
+  text-align:center;
+}
+.clock{
+  font-size:52px;
+  font-weight:700;
+  letter-spacing:2px;
+  color:#38bdf8;
+  text-shadow:0 0 25px rgba(56,189,248,.8);
+}
+.asset{
+  margin-top:6px;
+  font-weight:600;
+  color:#facc15;
+  letter-spacing:1px;
+}
+.sessions{
+  margin:26px 0 18px;
+}
+.line{
+  display:flex;
+  justify-content:space-between;
+  margin:12px 0;
+  font-size:15px;
+}
+.dot{
+  font-size:18px;
+}
+.on{color:#22c55e;text-shadow:0 0 10px #22c55e}
+.off{color:#475569}
+.killzone{
+  margin-top:18px;
+  padding:16px;
+  border-radius:18px;
+  font-weight:700;
+  letter-spacing:1px;
+}
+.live{
+  background:linear-gradient(90deg,#5b3a00,#facc15,#5b3a00);
+  color:#020617;
+  animation:pulse 1.6s infinite;
+}
+.wait{
+  background:#020617;
+  color:#64748b;
+  border:1px dashed #1e293b;
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(250,204,21,.6)}
+  70%{box-shadow:0 0 0 18px rgba(250,204,21,0)}
+  100%{box-shadow:0 0 0 0 rgba(250,204,21,0)}
+}
+.toggle{
+  margin-top:16px;
+  padding:10px 22px;
+  border-radius:20px;
+  border:none;
+  background:#020617;
+  color:#e5e7eb;
+  font-weight:600;
+  cursor:pointer;
+}
+.toggle.on{
+  background:#22c55e;
+  color:#020617;
+}
+</style>
+</head>
+
+<body>
+
+<div class="panel">
+  <div class="clock" id="clock">00:00:00</div>
+  <div class="asset">XAUUSD • GOLD</div>
+
+  <div class="sessions">
+    <div class="line"><span>TOKYO</span><span id="tokyo" class="dot">●</span></div>
+    <div class="line"><span>LONDON</span><span id="london" class="dot">●</span></div>
+    <div class="line"><span>NEW YORK</span><span id="ny" class="dot">●</span></div>
+  </div>
+
+  <div class="killzone wait" id="kill">GOLD KILLZONE • WAIT</div>
+
+  <button id="btn" class="toggle on">ALERT ENABLED</button>
+</div>
+
+<audio id="sound">
+  <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg">
+</audio>
+
+<script>
+let alertOn=true;
+btn.onclick=()=>{
+ alertOn=!alertOn;
+ btn.classList.toggle("on");
+ btn.innerText=alertOn?"ALERT ENABLED":"ALERT DISABLED";
+}
+
+function tick(){
+ const n=new Date();
+ const h=n.getHours();
+ clock.innerText=n.toLocaleTimeString();
+
+ const set=(id,on)=>{
+  const e=document.getElementById(id);
+  e.className="dot "+(on?"on":"off");
+ }
+
+ set("tokyo",h>=1&&h<10);
+ set("london",h>=11&&h<20);
+ set("ny",h>=16||h<1);
+
+ const gold=h>=16&&h<=19;
+ kill.className="killzone "+(gold?"live":"wait");
+ kill.innerText=gold?"GOLD KILLZONE • LIVE":"GOLD KILLZONE • WAIT";
+
+ if(gold && n.getMinutes()==0 && alertOn){
+  sound.play();
+ }
+}
+setInterval(tick,1000);
+tick();
+</script>
+
+</body>
+</html>
